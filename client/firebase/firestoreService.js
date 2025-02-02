@@ -94,3 +94,13 @@ export const getProducts = async () => {
         throw err;
     }
 }
+
+export const updateProduct = async (productId, newData) => {
+    try {
+        const productRef = doc(db, 'product', productId);
+        await updateDoc(productRef, newData);
+    }catch (err){
+        console.error("Ürün güncellenirken hata oluştu!", err);
+        throw err;
+    }
+}

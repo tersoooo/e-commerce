@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { getProducts, addProduct, getCategories } from "../../../firebase/firestoreService.js";
+import {getProducts, addProduct, getCategories, updateProduct} from "../../../firebase/firestoreService.js";
 import { toast } from 'react-toastify'
 
 export default function GetAllProducts() {
@@ -14,6 +14,14 @@ export default function GetAllProducts() {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [imageUrl, setImageUrl] = useState("")
     const [categories, setCategories] = useState([])
+
+    // Edit
+    const [editProductModal, setEditProductModal] = useState(false)
+    const [selectedProduct, setSelectedProduct] = useState(null)
+    const [editName, setEditName] = useState("")
+    const [editPrice, setEditPrice] = useState("")
+    const [editCategory, setEditCategory] = useState("")
+    const [editImageUrl, setEditImageUrl] = useState("")
 
 
     useEffect(() => {
@@ -72,6 +80,42 @@ export default function GetAllProducts() {
         }
         setLoading(false);
     }
+
+    const handleEdit = (product) => {
+        setSelectedProduct(product)
+        setEditPrice(product.price)
+        setEditName(product.name)
+        setEditCategory(product.category)
+        setEditImageUrl(product.imageUrl)
+        setEditProductModal(true);
+    }
+
+    const handleUpdateProduct = async (e) => {
+        e.preventDefault();
+        if (!editName.trim() || !editPrice || !editCategory || !editImageUrl.trim()) {
+            toast.error("Lütfen tüm alanları doldurun!");
+            return;
+        }
+        setLoading(true);
+        try{
+            await updateProduct(selectedProduct.id, {
+                name: editName.trim(),
+                price: parseFloat(editPrice),
+                category: editCategory,
+                imageUrl: editImageUrl,
+            });
+            toast.success("Ürün başarıyla güncellendi")
+            const data = await getProducts();
+            setProducts(data);
+            setEditProductModal(false)
+            setSelectedProduct(null)
+        }catch (err){
+            toast.error("Ürün güncellenirken hata oluştu!");
+        }
+        setLoading(false);
+    }
+
+
     if (loading) return <p className="text-center mt-5">Yükleniyor...</p>;
 
 
@@ -142,6 +186,62 @@ export default function GetAllProducts() {
                     </div>
                 </div>
             )}
+            {editProductModal && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black/70">
+                    <div className="bg-white p-6 rounded-lg w-96">
+                        <h3 className="text-lg font-medium mb-4">Ürün Düzenle</h3>
+                        <form onSubmit={handleUpdateProduct} className="space-y-4">
+                            <input
+                                type="text"
+                                placeholder="Ürün Adı"
+                                value={editName}
+                                onChange={(e) => setEditName(e.target.value)}
+                                className="w-full border border-gray-200 px-3 py-2 rounded"
+                            />
+                            <input
+                                type="number"
+                                placeholder="Fiyat"
+                                value={editPrice}
+                                onChange={(e) => setEditPrice(e.target.value)}
+                                className="w-full border border-gray-200 px-3 py-2 rounded"
+                            />
+                            <select
+                                value={editCategory}
+                                onChange={(e) => setEditCategory(e.target.value)}
+                                className="w-full border border-gray-200 px-3 py-2 rounded"
+                            >
+                                {categories.map((cat) => (
+                                    <option key={cat.id} value={cat.name}>
+                                        {cat.name}
+                                    </option>
+                                ))}
+                            </select>
+                            <input
+                                type="text"
+                                placeholder="Resim URL"
+                                value={editImageUrl}
+                                onChange={(e) => setEditImageUrl(e.target.value)}
+                                className="w-full border border-gray-200 px-3 py-2 rounded"
+                            />
+                            <div className="flex justify-end space-x-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setEditProductModal(false)}
+                                    className="px-4 py-2 bg-zinc-100 text-black font-medium text-sm hover:bg-transparent transition-colors cursor-pointer rounded"
+                                >
+                                    X
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-zinc-100 text-black font-medium text-sm hover:bg-transparent transition-colors cursor-pointer rounded"
+                                >
+                                    Update
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
             <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                 <tr>
@@ -168,8 +268,13 @@ export default function GetAllProducts() {
                             />
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                            <button className="bg-zinc-100 px-2 py-0.5 rounded text-red-600 cursor-pointer hover:bg-transparent hover:underline transition-all">Delete</button>
-                            <button className="px-3 rounded py-0.5 bg-zinc-100 text-black cursor-pointer hover:bg-transparent hover:underline transition-all">Edit</button>
+                            <button
+                                onClick={() => handleEdit(product)}
+                                className="px-3 rounded py-0.5 bg-zinc-100 text-black cursor-pointer hover:bg-transparent hover:underline transition-all">Edit
+                            </button>
+                            <button
+                                className="bg-zinc-100 px-2 py-0.5 rounded text-red-600 cursor-pointer hover:bg-transparent hover:underline transition-all">Delete
+                            </button>
                         </td>
                     </tr>
                 ))}
