@@ -1,7 +1,23 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
+import { getCategories } from "../../firebase/firestoreService.js";
+import { NavLink } from 'react-router-dom';
+import {slugify} from "../utils/helper.js";
 
 export default function Categories() {
+    const [categories, setCategories] = useState([]);
     const [dropDown, setDropDown] = useState(false);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try{
+                const data = await getCategories();
+                setCategories(data);
+            }catch (err){
+                console.error("Kategoriler yüklenirken hata oluştu:", error);
+            }
+        }
+        fetchCategories();
+    }, []);
 
     return (
         <div className="relative w-full z-50">
@@ -32,57 +48,18 @@ export default function Categories() {
                         }`}
                     >
                         <div className="grid grid-cols-4 ml-40 pt-4 gap-6">
-                            {/* Üst Giyim */}
-                            <div>
-                                <h3 className="font-bold text-2xl text-gray-800 mb-2">ÜST GİYİM</h3>
-                                <ul className="space-y-1 text-sm text-gray-600">
-                                    <li><a href="#" className="hover:text-blue-500">Tüm Üstleri Keşfet!</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Kazak</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Sweatshirt</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Gömlek</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Bluz</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Crop Top</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Tshirt</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Süveter</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Takımlar</a></li>
+                            {categories.map(cat => (
+                                <ul>
+                                    <li key={cat.id}>
+                                        <NavLink
+                                            className="hover:underline"
+                                            to={`/category/${slugify(cat.name)}`}
+                                        >
+                                            {cat.name}
+                                        </NavLink>
+                                    </li>
                                 </ul>
-                            </div>
-
-                            {/* Alt Giyim */}
-                            <div>
-                                <h3 className="font-bold text-2xl text-gray-800 mb-2">ALT GİYİM</h3>
-                                <ul className="space-y-1 text-sm text-gray-600">
-                                    <li><a href="#" className="hover:text-blue-500">Tüm Altları Keşfet!</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Pantolon</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Jean</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Tayt</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Eşofman</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Etek</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Şort</a></li>
-                                </ul>
-                            </div>
-
-                            {/* Dış Giyim */}
-                            <div>
-                                <h3 className="font-bold text-2xl text-gray-800 mb-2">DIŞ GİYİM</h3>
-                                <ul className="space-y-1 text-sm text-gray-600">
-                                    <li><a href="#" className="hover:text-blue-500">Tüm Dış Giyimi Keşfet!</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Mont</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Kaban</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Ceket</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Yelek</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Hırka</a></li>
-                                    <li><a href="#" className="hover:text-blue-500">Trençkot</a></li>
-                                </ul>
-                            </div>
-
-                            {/* Elbise */}
-                            <div>
-                                <h3 className="font-bold text-2xl text-gray-800 mb-2">ELBİSE</h3>
-                                <ul className="space-y-1 text-sm text-gray-600">
-                                    <li><a href="#" className="hover:text-blue-500">Elbise</a></li>
-                                </ul>
-                            </div>
+                            ))}
                         </div>
                     </div>
                 </li>

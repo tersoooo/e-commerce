@@ -1,5 +1,5 @@
 import {db} from './firebaseConfig.js';
-import {collection, addDoc, getDocs} from 'firebase/firestore';
+import {collection, addDoc, getDocs, updateDoc, doc, deleteDoc,query, where} from 'firebase/firestore';
 
 export const addCategory = async (categoryName) => {
     try {
@@ -31,4 +31,34 @@ export const addProduct = async (product) => {
 export const getCategories = async () => {
     const querySnapshot = await getDocs(collection(db, "categories"));
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+export const updateCategory = async (categoryId, newData) => {
+    try{
+        const categoryRef = doc(db, "categories", categoryId);
+        await updateDoc(categoryRef, newData)
+        console.log('Kategori Güncellendi', categoryId);
+    }catch (err){
+        console.log('Kategori güncellenirken bir hata oluştu!', err)
+    }
+}
+
+export const deleteCategory = async (categoryId) => {
+    try{
+        const categoryRef = doc(db, 'categories', categoryId);
+        await deleteDoc(categoryRef);
+    }catch (err){
+        console.log('Kategori silinirken bir sorun oluştu!', err);
+    }
+}
+
+export const getProductByCategory = async (categoryName) => {
+    try{
+        const q = query(collection(db, "product"), where("category", "==", categoryName));
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    }catch (err){
+        console.error("Kategoriye ait ürünler alınamadı:", err);
+        throw err;
+    }
 }
