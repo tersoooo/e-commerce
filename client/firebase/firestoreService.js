@@ -1,5 +1,5 @@
 import {db} from './firebaseConfig.js';
-import {collection, addDoc, getDocs, updateDoc, doc, deleteDoc,query, where} from 'firebase/firestore';
+import {collection, addDoc, getDocs, updateDoc, doc, deleteDoc,query, where, orderBy} from 'firebase/firestore';
 
 export const addCategory = async (categoryName) => {
     try {
@@ -29,7 +29,11 @@ export const addProduct = async (product) => {
 }
 
 export const getCategories = async () => {
-    const querySnapshot = await getDocs(collection(db, "categories"));
+    const q = query(
+        collection(db, "categories"),
+        orderBy("createdAt", "desc")
+    );
+    const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
 
@@ -53,11 +57,15 @@ export const deleteCategory = async (categoryId) => {
 }
 
 export const getProductByCategory = async (categoryName) => {
-    try{
-        const q = query(collection(db, "product"), where("category", "==", categoryName));
+    try {
+        const q = query(
+            collection(db, "product"),
+            where("category", "==", categoryName),
+            orderBy("createdAt", "desc")
+        );
         const querySnapshot = await getDocs(q);
         return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    }catch (err){
+    } catch (err) {
         console.error("Kategoriye ait ürünler alınamadı:", err);
         throw err;
     }

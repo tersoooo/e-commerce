@@ -13,6 +13,7 @@ import ShowCategory from "./components/admin/ShowCategory.jsx";
 import Users from "./pages/admin/Users.jsx";
 import Tickets from "./pages/admin/Tickets.jsx";
 import Settings from "./pages/admin/Settings.jsx";
+import Products from "./pages/admin/Products.jsx";
 
 
 function App() {
@@ -29,8 +30,8 @@ function App() {
                     {/* Admin */}
                     <Route path="/admin" element={<AdminLayout/>}>
                         <Route index element={<AdminHome/>}/>
-                        <Route path="/admin/add-category" element={<AddCategory/>}/>
                         <Route path="/admin/category" element={<ShowCategory/>}/>
+                        <Route path="/admin/products" element={<Products/>}/>
                         <Route path="/admin/users" element={<Users />} />
                         <Route path="/admin/tickets" element={<Tickets />} />
                         <Route path="/admin/settings" element={<Settings />} />

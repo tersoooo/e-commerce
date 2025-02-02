@@ -1,11 +1,13 @@
 import React, {useState, useEffect} from "react";
-import {getCategories, updateCategory,deleteCategory} from "../../../firebase/firestoreService.js";
+import {getCategories, updateCategory, deleteCategory, addCategory} from "../../../firebase/firestoreService.js";
 import {toast} from "react-toastify";
 
 export default function ShowCategory() {
 
     const [categories, setCategories] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [categoryName, setCategoryName] = useState("");
+    const [addCategoryModal, setAddCategoryModal] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [updateName, setUpdateName] = useState("")
     const [loading, setLoading] = useState(true);
@@ -61,12 +63,67 @@ export default function ShowCategory() {
         }
     }
 
+    const handleAddCategory = async (e) => {
+        e.preventDefault();
+        if (!categoryName.trim()) return;
+
+        setLoading(true);
+        try {
+            await addCategory(categoryName.trim());
+            toast.success("Kategori başarıyla eklendi!");
+
+            // Yeni kategorileri tekrar çekiyoruz
+            const data = await getCategories();
+            setCategories(data);
+
+            setCategoryName("");
+            setAddCategoryModal(false);
+        } catch (error) {
+            toast.error("Kategori eklenirken hata oluştu!");
+        }
+        setLoading(false);
+    };
+
     if (loading) return <p className="text-center mt-5">Yükleniyor...</p>;
 
     return (
         <section className="">
             <h2 className="text-lg font-medium text-gray-800 mt-6 px-2">Category</h2>
-
+            <div className="flex justify-end">
+                <span
+                    className="bg-zinc-100 px-2 py-0.5 rounded text-blue-600 hover:cursor-pointer hover:underline"
+                    onClick={() => setAddCategoryModal(true)}
+                >
+                    Add New Category
+                </span>
+            </div>
+            {addCategoryModal && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black/70 bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                        <h2 className="text-lg font-semibold mb-4">Add Category</h2>
+                        <input
+                            type="text"
+                            value={categoryName}
+                            onChange={(e) => setCategoryName(e.target.value)}
+                            className="border px-4 py-2 w-full rounded mb-4"
+                        />
+                        <div className="flex justify-end space-x-2">
+                            <button
+                                onClick={() => setAddCategoryModal(false)}
+                                className="px-4 py-2 bg-gray-300 rounded"
+                            >
+                                X
+                            </button>
+                            <button
+                                onClick={handleAddCategory}
+                                className="px-4 py-2 bg-zinc-100 text-black cursor-pointer hover:bg-transparent rounded transition-colors border border-gray-200"
+                            >
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             {isModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black/70 bg-opacity-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-96">
@@ -92,66 +149,66 @@ export default function ShowCategory() {
                             </button>
                         </div>
                     </div>
-                </div>
-            )}
+                        </div>
+                    )}
 
-            <div className="flex flex-col mt-6">
-                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                        <div className="border border-gray-200 md:rounded-lg">
-                            <table className="w-full border-collapse border border-gray-200">
-                                <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="px-4 py-3.5 text-sm font-normal text-left text-gray-500">
-                                        Category Name
-                                    </th>
-                                    <th className="px-4 py-3.5 text-sm font-normal text-left text-gray-500">
-                                        Category Created At
-                                    </th>
-                                    <th className="px-4 py-3.5 text-sm font-normal text-left text-gray-500">
-                                        Options
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                {categories.length > 0 ? (
-                                    categories.map((category) => (
-                                        <tr key={category.id}>
-                                            <td className="px-4 py-4 text-sm font-medium text-gray-800">
-                                                {category.name}
-                                            </td>
-                                            <td className="px-4 py-4 text-sm text-gray-600">
-                                                {category.createdAt?.toDate().toLocaleDateString() || "-"}
-                                            </td>
-                                            <td className="px-4 py-4 text-sm whitespace-nowrap space-x-4">
-                                                <button
-                                                    onClick={() => handleEdit(category)}
-                                                    className="px-2 py-1 text-gray-800 hover:bg-transparent transition-colors cursor-pointer font-medium rounded hover:underline bg-zinc-100"
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDelete(category.id)}
-                                                    className="px-2 py-1 text-red-600 hover:bg-transparent transition-colors cursor-pointer font-medium rounded hover:underline bg-zinc-100"
-                                                >
-                                                    Delete
-                                                </button>
-                                            </td>
+                    <div className="flex flex-col mt-6">
+                        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                            <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                                <div className="border border-gray-200 md:rounded-lg">
+                                    <table className="w-full border-collapse border border-gray-200">
+                                        <thead className="bg-gray-50">
+                                        <tr>
+                                            <th className="px-4 py-3.5 text-sm font-normal text-left text-gray-500">
+                                                Category Name
+                                            </th>
+                                            <th className="px-4 py-3.5 text-sm font-normal text-left text-gray-500">
+                                                Category Created At
+                                            </th>
+                                            <th className="px-4 py-3.5 text-sm font-normal text-left text-gray-500">
+                                                Options
+                                            </th>
                                         </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="3" className="px-4 py-4 text-center text-gray-500">
-                                            Henüz kategori eklenmemiş.
-                                        </td>
-                                    </tr>
-                                )}
-                                </tbody>
-                            </table>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                        {categories.length > 0 ? (
+                                            categories.map((category) => (
+                                                <tr key={category.id}>
+                                                    <td className="px-4 py-4 text-sm font-medium text-gray-800">
+                                                        {category.name}
+                                                    </td>
+                                                    <td className="px-4 py-4 text-sm text-gray-600">
+                                                        {category.createdAt?.toDate().toLocaleDateString() || "-"}
+                                                    </td>
+                                                    <td className="px-4 py-4 text-sm whitespace-nowrap space-x-4">
+                                                        <button
+                                                            onClick={() => handleEdit(category)}
+                                                            className="px-2 py-1 text-gray-800 hover:bg-transparent transition-colors cursor-pointer font-medium rounded hover:underline bg-zinc-100"
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDelete(category.id)}
+                                                            className="px-2 py-1 text-red-600 hover:bg-transparent transition-colors cursor-pointer font-medium rounded hover:underline bg-zinc-100"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="3" className="px-4 py-4 text-center text-gray-500">
+                                                    Henüz kategori eklenmemiş.
+                                                </td>
+                                            </tr>
+                                        )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </section>
-    );
-}
+                </section>
+            );
+            }
