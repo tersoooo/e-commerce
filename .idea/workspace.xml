@@ -5,15 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="40e7acbe-60fa-4ec0-ae5d-59cb93da2095" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/client/src/pages/admin/Products.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/ecommerce.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/client/src/components/admin/GetAllProducts.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/firebase/firestoreService.js" beforeDir="false" afterPath="$PROJECT_DIR$/client/firebase/firestoreService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/App.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/components/admin/ShowCategory.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/components/admin/ShowCategory.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/components/admin/Sidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/components/admin/Sidebar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/pages/admin/Products.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/pages/admin/Products.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,7 +74,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1738254400305</updated>
-      <workItem from="1738254401457" duration="28633000" />
+      <workItem from="1738254401457" duration="30778000" />
     </task>
     <servers />
   </component>
